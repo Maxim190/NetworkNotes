@@ -1,34 +1,67 @@
 package com.example.networknotes.ui.main
 
-import androidx.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import android.widget.Button
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.networknotes.NoteContent
+import com.example.networknotes.NoteHeader
 import com.example.networknotes.R
+import com.example.networknotes.ui.main.RcyclerView.Callback
+import com.example.networknotes.ui.main.RcyclerView.MainAdapter
+import com.example.networknotes.ui.note.NoteFragment
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), MainContract.View, Callback{
+
+    private lateinit var presenter: MainContract.Presenter
+    private lateinit var recyclerView: RecyclerView
 
     companion object {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
+
         val root: View = inflater.inflate(R.layout.main_fragment, container, false)
-        val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
+        recyclerView = root.findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
+        presenter = MainPresenter(context!!,this)
+
+        val button: Button = root.findViewById(R.id.add_btn)
+        button.setOnClickListener { presenter.addNote() }
+
         return root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun displayAllNotesHeaders(array: List<NoteHeader>) {
+        recyclerView.adapter = MainAdapter(array, this)
     }
 
+    override fun displayNoteFragment(note: NoteContent?) {
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.replace(R.id.container, NoteFragment(note))
+            .addToBackStack(null)
+            .commit()
+    }
+
+    override fun onItemClicked(item: NoteHeader) {
+        presenter.getNoteContent(item)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Toast.makeText(activity, "YEPP", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun displayMsg(msg: String) {
+        Toast.makeText(activity, msg, Toast.LENGTH_LONG).show()
+    }
 }

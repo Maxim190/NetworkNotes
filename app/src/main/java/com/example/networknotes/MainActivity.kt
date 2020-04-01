@@ -1,8 +1,10 @@
 package com.example.networknotes
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.networknotes.ui.main.MainFragment
+import com.example.networknotes.db.sql.SqlDB
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,6 +16,7 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.container, MainFragment.newInstance())
                     .commitNow()
         }
+        SqlDB.getInstance(this)
     }
 }
 
