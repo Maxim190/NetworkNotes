@@ -8,11 +8,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.networknotes.NoteContent
-import com.example.networknotes.NoteHeader
+import com.example.networknotes.db.NoteContent
+import com.example.networknotes.db.NoteHeader
 import com.example.networknotes.R
 import com.example.networknotes.ui.main.RcyclerView.Callback
 import com.example.networknotes.ui.main.RcyclerView.MainAdapter
@@ -54,11 +53,6 @@ class MainFragment : Fragment(), MainContract.View, Callback{
 
     override fun onItemClicked(item: NoteHeader) {
         presenter.getNoteContent(item)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Toast.makeText(activity, "YEPP", Toast.LENGTH_SHORT).show()
     }
 
     override fun displayMsg(msg: String) {

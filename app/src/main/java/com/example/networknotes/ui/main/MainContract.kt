@@ -1,8 +1,9 @@
 package com.example.networknotes.ui.main
 
 import android.database.Cursor
-import com.example.networknotes.NoteContent
-import com.example.networknotes.NoteHeader
+import com.example.networknotes.db.ModelCallbackContract
+import com.example.networknotes.db.NoteContent
+import com.example.networknotes.db.NoteHeader
 
 interface MainContract {
     interface View {
@@ -15,10 +16,11 @@ interface MainContract {
         fun getNoteContent(noteHeader: NoteHeader)
     }
     interface Model {
-        fun getNotesContent(id: Int): Cursor
-        fun getNotesList(): Cursor
-        fun addNewNote(title: String, content: String): Long
-        fun editExistingNote(id: Int, title: String, content: String): Int
-        fun deleteNote(id: Int): Int
+        fun setListener(listener: ModelCallbackContract)
+        fun getNotesContent(id: Int)
+        fun getNotesList()
+        fun addNewNote(title: String, content: String)
+        fun editExistingNote(id: Int, title: String, content: String)
+        fun deleteNote(id: Int)
     }
 }

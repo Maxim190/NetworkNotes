@@ -1,33 +1,19 @@
 package com.example.networknotes.ui.main
 
 import android.content.Context
-import com.example.networknotes.NoteContent
-import com.example.networknotes.NoteHeader
+import com.example.networknotes.db.ModelCallbackContract
+import com.example.networknotes.db.NoteContent
+import com.example.networknotes.db.NoteHeader
 import com.example.networknotes.db.sql.SqlDB
-import com.example.networknotes.db.sql.TableStructure
 
-class MainPresenter(context: Context, private val currentView: MainContract.View): MainContract.Presenter {
+class MainPresenter(context: Context, private val currentView: MainContract.View)
+        : MainContract.Presenter, ModelCallbackContract {
 
-    private val model = SqlDB.getInstance(context)
+    private var model: MainContract.Model = SqlDB.getInstance(context)
 
     init {
-        currentView.displayAllNotesHeaders(getNotesList())
-    }
-
-    fun getNotesList(): List<NoteHeader> {
-        val cursor = model.getNotesList()
-        with(cursor) {
-            val array = mutableListOf<NoteHeader>()
-            while (moveToNext()) {
-                array.add(
-                    NoteHeader(
-                        getInt(0),
-                        getString(getColumnIndex(TableStructure.COLUMN_NAME_TITLE))
-                    )
-                )
-            }
-            return array
-        }
+        model.setListener(this)
+        model.getNotesList()
     }
 
     override fun addNote() {
@@ -35,18 +21,26 @@ class MainPresenter(context: Context, private val currentView: MainContract.View
     }
 
     override fun getNoteContent(noteHeader: NoteHeader) {
-        val cursor = model.getNotesContent(noteHeader.id)
-        with(cursor) {
-            if (moveToNext()) {
-                currentView.displayNoteFragment(
-                    NoteContent (
-                        noteHeader.id,
-                        getString(getColumnIndex(TableStructure.COLUMN_NAME_TITLE)),
-                        getString(getColumnIndex(TableStructure.COLUMN_NAME_CONTENT))
-                    )
-                )
-            } else {
-                currentView.displayMsg("Failed getting note content $count")
+        model.getNotesContent(noteHeader.id)
+    }
+
+    override fun modelCallback(notesContent: List<NoteContent>?,
+                               notesHeader: List<NoteHeader>?, errorMsg: String?) {
+        with(currentView) {
+            if (errorMsg != null) {
+                displayMsg(errorMsg)
+                return
+            }
+            when {
+                notesContent != null -> {
+                    displayNoteFragment(notesContent.first())
+                }
+                notesHeader != null -> {
+                    displayAllNotesHeaders(notesHeader)
+                }
+                else -> {
+                    displayMsg("Unknown error occurred")
+                }
             }
         }
     }
