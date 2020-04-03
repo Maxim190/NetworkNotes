@@ -52,7 +52,7 @@ class SqlDB private constructor(val context: Context):
                 null
             )
         )
-        listener?.modelCallback(notesContent = result)
+        listener?.modelCallback(data = result)
     }
 
     override fun getNotesList(){
@@ -71,7 +71,7 @@ class SqlDB private constructor(val context: Context):
                 null
             )
         )
-        listener?.modelCallback(notesHeader = result)
+        listener?.modelCallback(data = result)
     }
 
     override fun addNewNote(title: String, content: String) {

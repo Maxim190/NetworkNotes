@@ -4,12 +4,13 @@ import android.content.Context
 import com.example.networknotes.db.ModelCallbackContract
 import com.example.networknotes.db.NoteContent
 import com.example.networknotes.db.NoteHeader
+import com.example.networknotes.db.server.NetworkService
 import com.example.networknotes.db.sql.SqlDB
 
 class MainPresenter(context: Context, private val currentView: MainContract.View)
         : MainContract.Presenter, ModelCallbackContract {
 
-    private var model: MainContract.Model = SqlDB.getInstance(context)
+    private var model: MainContract.Model = NetworkService.instance//SqlDB.getInstance(context)
 
     init {
         model.setListener(this)
@@ -24,19 +25,21 @@ class MainPresenter(context: Context, private val currentView: MainContract.View
         model.getNotesContent(noteHeader.id)
     }
 
-    override fun modelCallback(notesContent: List<NoteContent>?,
-                               notesHeader: List<NoteHeader>?, errorMsg: String?) {
+    override fun <T> modelCallback(data: List<T>, errorMsg: String?) {
         with(currentView) {
             if (errorMsg != null) {
                 displayMsg(errorMsg)
                 return
+            } else if (data.isEmpty()) {
+                displayMsg("Failed receiving data")
+                return
             }
-            when {
-                notesContent != null -> {
-                    displayNoteFragment(notesContent.first())
+            when(data.first()) {
+                is NoteContent -> {
+                    displayNoteFragment(data[0] as NoteContent)
                 }
-                notesHeader != null -> {
-                    displayAllNotesHeaders(notesHeader)
+                is NoteHeader -> {
+                    displayAllNotesHeaders(data.filterIsInstance<NoteHeader>())
                 }
                 else -> {
                     displayMsg("Unknown error occurred")

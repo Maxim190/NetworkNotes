@@ -13,13 +13,13 @@ interface ServerAPI {
     @GET("/api/notes/{id}")
     fun getNoteContent(
         @Path("id") id: Int
-    ): Call<List<NoteContent>>
+    ): Call<NoteContent>
 
     @POST("/api/notes")
     fun addNewNote(
         @Query("title") title: String,
         @Query("content") content: String
-    )
+    ): Call<List<Int>>
 
     @PUT("/api/notes/{id}")
     fun editExistingNote(
