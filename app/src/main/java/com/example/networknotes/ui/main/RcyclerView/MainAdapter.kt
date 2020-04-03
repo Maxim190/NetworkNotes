@@ -1,12 +1,11 @@
 package com.example.networknotes.ui.main.RcyclerView
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.networknotes.NoteHeader
+import com.example.networknotes.db.NoteHeader
 import com.example.networknotes.R
 
 class MainAdapter(val items: List<NoteHeader>, val callback: Callback): RecyclerView.Adapter<MainAdapter.MainHolder>() {
